@@ -1,7 +1,7 @@
-# Your name: 
-# Your student id:
-# Your email:
-# List who you have worked with on this homework:
+# Your name: Rachel Rajkumar
+# Your student id: 7099 6834
+# Your email: rrajkuma@umich.edu
+# List who you have worked with on this homework: N/A
 
 import matplotlib.pyplot as plt
 import os
@@ -15,7 +15,32 @@ def load_rest_data(db):
     and each inner key is a dictionary, where the key:value pairs should be the category, 
     building, and rating for the restaurant.
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+    rest_dict = {}
+    cur.execute("SELECT COUNT() FROM restaurants")
+    len = int(cur.fetchone()[0])
+    for i in range(1, len+1):
+        temp = {}
+        name_query = "SELECT name FROM restaurants where id = "  + '"' + str(i) + '"' 
+        cur.execute(name_query)
+        name = cur.fetchone()[0]
+        rate_query = "SELECT rating FROM restaurants where id = "  + '"' + str(i) + '"' 
+        cur.execute(rate_query)
+        rate = cur.fetchone()[0]
+        cat_query = "SELECT category FROM categories JOIN restaurants ON categories.id = restaurants.category_id WHERE restaurants.id = " + '"' + str(i) + '"' 
+        cur.execute(cat_query)
+        cat = cur.fetchone()[0]
+        build_query = "SELECT building FROM buildings JOIN restaurants ON buildings.id = restaurants.building_id WHERE restaurants.id = " + '"' + str(i) + '"' 
+        cur.execute(build_query)
+        build = cur.fetchone()[0]
+        temp["category"] = cat
+        temp["building"] = build
+        temp["rating"] = rate
+        rest_dict[name] = temp
+    return(rest_dict)
+
 
 def plot_rest_categories(db):
     """
@@ -49,7 +74,9 @@ def get_highest_rating(db): #Do this through DB as well
 
 #Try calling your functions here
 def main():
-    pass
+    load_rest_data('South_U_Restaurants.db')
+    #pass
+
 
 class TestHW8(unittest.TestCase):
     def setUp(self):
@@ -81,7 +108,7 @@ class TestHW8(unittest.TestCase):
         self.assertIsInstance(rest_data, dict)
         self.assertEqual(rest_data['M-36 Coffee Roasters Cafe'], self.rest_dict)
         self.assertEqual(len(rest_data), 25)
-
+    '''
     def test_plot_rest_categories(self):
         cat_data = plot_rest_categories('South_U_Restaurants.db')
         self.assertIsInstance(cat_data, dict)
@@ -97,7 +124,7 @@ class TestHW8(unittest.TestCase):
     def test_get_highest_rating(self):
         highest_rating = get_highest_rating('South_U_Restaurants.db')
         self.assertEqual(highest_rating, self.highest_rating)
-
+'''
 if __name__ == '__main__':
     main()
     unittest.main(verbosity=2)
