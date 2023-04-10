@@ -86,11 +86,8 @@ def find_rest_in_building(building_num, db):
     query = "SELECT name FROM restaurants JOIN buildings on restaurants.building_id = buildings.id where buildings.building = " + '"' + str(building_num) + '"' + "ORDER BY restaurants.rating DESC"
     res = cur.execute(query)
     for row in res:
-        print(row)
-        building = cur.fetchone()
-        if building != None:
-            build_list.append(building)
-    print(build_list)
+        build_list.append(row[0])
+    return build_list
 
 #EXTRA CREDIT
 def get_highest_rating(db): #Do this through DB as well
@@ -150,7 +147,6 @@ class TestHW8(unittest.TestCase):
         self.assertIsInstance(cat_data, dict)
         self.assertEqual(cat_data, self.cat_dict)
         self.assertEqual(len(cat_data), 14)
-        '''
 
     def test_find_rest_in_building(self):
         restaurant_list = find_rest_in_building(1140, 'South_U_Restaurants.db')
@@ -158,10 +154,11 @@ class TestHW8(unittest.TestCase):
         self.assertEqual(len(restaurant_list), 3)
         self.assertEqual(restaurant_list[0], 'BTB Burrito')
 
+    '''
     def test_get_highest_rating(self):
         highest_rating = get_highest_rating('South_U_Restaurants.db')
         self.assertEqual(highest_rating, self.highest_rating)
-'''
+    '''
 if __name__ == '__main__':
     main()
     unittest.main(verbosity=2)
