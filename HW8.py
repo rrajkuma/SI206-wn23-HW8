@@ -48,7 +48,30 @@ def plot_rest_categories(db):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the count of number of restaurants in each category.
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+    temp_dict = {}
+    cur.execute("SELECT COUNT() FROM restaurants")
+    len = int(cur.fetchone()[0])
+    for i in range(1, len+1):
+        cat_query = "SELECT category FROM categories JOIN restaurants ON categories.id = restaurants.category_id WHERE restaurants.id = " + '"' + str(i) + '"' 
+        cur.execute(cat_query)
+        cat = cur.fetchone()[0]
+        temp_dict[cat] = temp_dict.get(cat, 0) + 1
+    temp = sorted(temp_dict.items(), key = lambda x:x[1], reverse = True)
+    cat_dict = dict(temp)
+    names = list(cat_dict.keys())
+    values = list(cat_dict.values())
+    plt.barh(names, values)
+    plt.title('Number of restaurants in South University by type')
+    plt.xlabel('Restaurants')
+    plt.ylabel("Number of restaurants")
+    plt.savefig('rest_bar.png')
+    return cat_dict
+
+
+
 
 def find_rest_in_building(building_num, db):
     '''
@@ -75,6 +98,7 @@ def get_highest_rating(db): #Do this through DB as well
 #Try calling your functions here
 def main():
     load_rest_data('South_U_Restaurants.db')
+    plot_rest_categories('South_U_Restaurants.db')
     #pass
 
 
@@ -108,12 +132,13 @@ class TestHW8(unittest.TestCase):
         self.assertIsInstance(rest_data, dict)
         self.assertEqual(rest_data['M-36 Coffee Roasters Cafe'], self.rest_dict)
         self.assertEqual(len(rest_data), 25)
-    '''
+
     def test_plot_rest_categories(self):
         cat_data = plot_rest_categories('South_U_Restaurants.db')
         self.assertIsInstance(cat_data, dict)
         self.assertEqual(cat_data, self.cat_dict)
         self.assertEqual(len(cat_data), 14)
+        '''
 
     def test_find_rest_in_building(self):
         restaurant_list = find_rest_in_building(1140, 'South_U_Restaurants.db')
