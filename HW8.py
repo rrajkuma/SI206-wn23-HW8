@@ -59,7 +59,7 @@ def plot_rest_categories(db):
         cur.execute(cat_query)
         cat = cur.fetchone()[0]
         temp_dict[cat] = temp_dict.get(cat, 0) + 1
-    temp = sorted(temp_dict.items(), key = lambda x:x[1], reverse = True)
+    temp = sorted(temp_dict.items(), key = lambda x:x[1])
     cat_dict = dict(temp)
     names = list(cat_dict.keys())
     values = list(cat_dict.values())
